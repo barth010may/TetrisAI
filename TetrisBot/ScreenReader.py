@@ -1,11 +1,36 @@
 
 import cv2
 from mss import mss, tools
-from PIL import Image
+from PIL import Image, ImageOps
 import numpy as np
+import pyautogui
 
 class ScreenReader:
     def __init__(self, top, left, width, height):
+        
+        # Capture a specific region of the screen
+        # The region is defined by (left, top, width, height)
+        
+        region = (left, top, width, height)  # Example values
+        screenshot = pyautogui.screenshot(region=region)
+        
+        # Convert the screenshot to grayscale
+        #gray_screenshot = ImageOps.grayscale(screenshot)
+
+        # Convert to NumPy array in BGR format
+        img = np.array(screenshot)
+        
+        # Convert BGR to Grayscale
+        self.gray_img = cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY)
+
+        # Save grayscale image
+        cv2.imwrite('grayscale_screenshot.png', self.gray_img)
+        print("Grayscale:", 'grayscale_screenshot.png')
+
+        # Save the grayscale screenshot
+        #screenshot.save('grayscale_screenshot.png')
+        
+        '''
         with mss() as sct:
             # The screen part to capture
             monitor = {"top": top, "left": left, "width": width, "height": height}
@@ -25,29 +50,28 @@ class ScreenReader:
             # Save grayscale image
             cv2.imwrite(output_gray, self.gray_img)
             print("Grayscale:", output_gray)
+            '''
 
-    '''
-class ScreenReader:
-    def __init__(self, top, left, width, height):
-        with mss() as sct:
-            # The screen part to capture
-            monitor = {"top": top, "left": left, "width": width, "height": height}
-            output_gray = "sct-{top}x{left}_{width}x{height}_gray.png".format(**monitor)
+    def get_pixel(coords):
+    
+        # Capture a specific region of the screen
+        # The region is defined by (left, top, width, height)
+        
+        region = (600, 180, 750, 800)  # Example values
+        screenshot = pyautogui.screenshot(region=region)
 
-            # Grab the data
-            sct_img = sct.grab(monitor)
-
-            # Convert to PIL Image
-            img = Image.frombytes("RGB", sct_img.size, sct_img.bgra, "raw", "BGRX")
-
-            # Convert to grayscale
-            self.gray_img = img.convert('L')
-            print("Image is gray scaled")
-
-            # Save grayscale image
-            self.gray_img.save(output_gray)
-            print("Grayscale:", output_gray)
-    '''
+        # Convert to NumPy array in BGR format
+        img = np.array(screenshot)
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        
+        # Convert BGR to Grayscale
+        #gray_img = cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY)
+        cv2.imwrite('grayscale_screenshot.png', img)
+        print("Grayscale:", 'grayscale_screenshot.png')
+        
+        pixel_value = img[coords[1], coords[0]]
+        print(f"Pixel Value: {pixel_value}")
+        return tuple(pixel_value)
 
     # Load an image in gray scale
     def grayScale_pixels(self, coords):
@@ -65,7 +89,7 @@ class ScreenReader:
         else:
             return False
 
-
+    @staticmethod
     def get_board_state(self, grid_size, cell_size, board_dimensions):
         board_state = []
         for row in range(grid_size[1]):  # grid_size[1] is the number of rows
@@ -82,6 +106,6 @@ class ScreenReader:
                 if self.is_cell_filled(cell):  # This threshold might need adjustment
                     row_state.append(1)  # Cell is filled
                 else:
-                    row_state.append(0)  # Cell is empty
+                    row_state.append(' ')  # Cell is empty
             board_state.append(row_state)
         return board_state

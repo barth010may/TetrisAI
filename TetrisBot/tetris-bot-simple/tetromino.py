@@ -1,9 +1,4 @@
-
-
-
-#class Shape:
-   
-   #!/usr/bin/python
+#!/usr/bin/python
 
 class Tetromino():
 
@@ -37,8 +32,8 @@ class Tetromino():
     def TTetromino():
         return Tetromino(
             [
-                [' ', 'T', ' '],
-                ['T', 'T', 'T']
+                ['T', 'T', 'T'],
+                [' ', 'T', ' ']
             ]
         )
 
@@ -64,8 +59,8 @@ class Tetromino():
     def JTetromino():
         return Tetromino(
             [
-                ['J', ' ', ' '],
-                ['J', 'J', 'J']
+                ['J', 'J', 'J'],
+                [' ', ' ', 'J']
             ]
         )
 
@@ -73,8 +68,8 @@ class Tetromino():
     def LTetromino():
         return Tetromino(
             [
-                [' ', ' ', 'L'],
-                ['L', 'L', 'L']
+                ['L', 'L', 'L'],
+                ['L', ' ', ' ']
             ]
         )
 
@@ -142,6 +137,3 @@ if __name__ == '__main__':
     print(t.width())
     t.flip()
     print(t)
-   
-   
-    

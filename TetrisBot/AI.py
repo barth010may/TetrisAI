@@ -37,7 +37,7 @@ class AI:
         return end_positions
 
     def check_collision(self, direction):
-
+        pass
 
     def get_all_rotations(self, shape):
         # Return all possible rotations of the shape
