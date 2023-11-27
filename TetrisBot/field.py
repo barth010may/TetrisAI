@@ -1,12 +1,12 @@
 #!/usr/bin/python
 
-from tetromino import Tetromino
+from Shape import Tetromino
 
 class Field():
 
     WIDTH = 10
-    HEIGHT = 21
-    
+    HEIGHT = 20
+
     def __init__(self, state=None):
         if state:
             self.state = state

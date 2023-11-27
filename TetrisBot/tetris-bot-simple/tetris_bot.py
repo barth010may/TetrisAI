@@ -17,6 +17,7 @@ TETROMINO = {
     (0, 255, 0): Tetromino.ZTetromino
 }
 
+
 def detect_mouse():
     print("Press enter to select mouse coordinate:")
     input()

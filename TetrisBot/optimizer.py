@@ -4,6 +4,7 @@ from Shape import Tetromino
 
 from collections import defaultdict
 from functools import cmp_to_key
+
 board_top = 97 - 32 * 2
 board_left = 212
 BOARD_WIDTH = 508 - board_left
@@ -25,6 +26,10 @@ class Optimizer():
             for column in range(BOARD_WIDTH):
                 try:
                     f = field.copy()
+                    # Current issue, is that i decided to drop the field class,
+                    # However, the optimizer needs a functioning field class,
+                    # so to fix, try to implement the field class from the original
+                    # alternatively, just implement the drop classes and the rest into board instance
                     row = f.drop(tetromino_, column)
                     drops.append({
                         'field': f,

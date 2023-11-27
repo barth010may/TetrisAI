@@ -6,19 +6,21 @@ import time
 from Shape import Tetromino
 import pyautogui
 import numpy as np
+from optimizer import Optimizer
+from field import Field
 
 next_shape_pixel = [642, 173]
 current_shape_pixel = [335, 50]
 
 # Define the Tetris board area coordinates and size
-board_top = 97 - 32 * 2
-board_left = 212
-board_width = 508 - board_left
-board_height = 714 - board_top
-cell_width = 244 - 212
-cell_height = 244 - 212
+board_top = 92
+board_left = 208
+board_width = 515 - board_left
+board_height = 738 - board_top
+cell_width = 343 - 308
+cell_height = 34
 # Define the grid size and cell size
-grid_size = (10, 22)  # Example for a standard Tetris grid
+grid_size = (10, 20)  # Example for a standard Tetris grid
 cell_size = (cell_width, cell_height)
 board_dimensions = (board_top, board_left)
 
@@ -42,32 +44,25 @@ def shape_gray_values(self):
 '''
 
 # True gray values for laptop screen
-TETRIMINO_CURRENT = {
-    (60, 205, 241): Tetromino.OTetromino,
-    (172, 238,  57): Tetromino.ITetromino,
-    (207 , 79, 221): Tetromino.TTetromino,
-    (59, 240, 171): Tetromino.STetromino,
-    ( 72,  62, 245): Tetromino.ZTetromino,
-    (61, 129, 243): Tetromino.LTetromino,
-    (221 , 79, 104): Tetromino.JTetromino
-    
-    #166: Tetromino.OTetromino,
-    #198: Tetromino.ITetromino,
-    #133: Tetromino.TTetromino,
-    #178: Tetromino.STetromino,
-    #86: Tetromino.ZTetromino,
-    #122: Tetromino.LTetromino,
-    #124: Tetromino.JTetromino
+TETROMINO_CURRENT = {
+    (60, 205, 241): Tetromino.OTetromino(),
+    (172, 238,  57): Tetromino.ITetromino(),
+    (207 , 79, 221): Tetromino.TTetromino(),
+    (59, 240, 171): Tetromino.STetromino(),
+    ( 72,  62, 245): Tetromino.ZTetromino(),
+    (61, 129, 243): Tetromino.LTetromino(),
+    (221 , 79, 104): Tetromino.JTetromino()
+
 }
 
-TETRIMINO_NEXT = {
-    (56,149, 171): Tetromino.OTetromino,
-    (115, 152,  50): Tetromino.ITetromino,
-    (155, 63, 165): Tetromino.TTetromino,
-    (51, 180, 132): Tetromino.STetromino,
-    ( 59,  52, 181): Tetromino.ZTetromino,
-    (51, 100, 180): Tetromino.LTetromino,
-    (165,  63,  80): Tetromino.JTetromino
+TETROMINO_NEXT = {
+    (56,149, 171): Tetromino.OTetromino(),
+    (115, 152,  50): Tetromino.ITetromino(),
+    (155, 63, 165): Tetromino.TTetromino(),
+    (51, 180, 132): Tetromino.STetromino(),
+    ( 59,  52, 181): Tetromino.ZTetromino(),
+    (51, 100, 180): Tetromino.LTetromino(),
+    (165,  63,  80): Tetromino.JTetromino()
 }
 
 
@@ -76,15 +71,17 @@ TETRIMINO_NEXT = {
 if __name__ == '__main__':
 
     keyboard = KeyboardInput()
-    screenShot = ScreenReader()
-    current_tetromino = TETRIMINO_CURRENT[screenShot.get_pixel(current_shape_pixel)]
+    current_tetromino = TETROMINO_CURRENT[ScreenReader.get_pixel(current_shape_pixel)]
     next_tetromino = None
     time.sleep(2)
         
     # Get the current state of the board
     while True:
-        next_tetromino = TETRIMINO_NEXT[screenShot.get_pixel(next_shape_pixel)]
-        current_board_state = ScreenReader.get_board_state(grid_size, cell_size, board_dimensions)
+        next_tetromino = TETROMINO_NEXT[ScreenReader.get_pixel(next_shape_pixel)]
+        current_board_state = ScreenReader(180, 600, 750, 800).get_board_state(grid_size, cell_size, board_dimensions)
+        #ScreenReader.print_board(current_board_state)
+        
+        field = Field(current_board_state)
         opt = Optimizer.get_optimal_drop(field, current_tetromino)
         rotation = opt['tetromino_rotation']
         column = opt['tetromino_column']
@@ -98,29 +95,8 @@ if __name__ == '__main__':
             'drop': ' '
         })
         pyautogui.typewrite(keys)
-        print(field)
+        ScreenReader.print_board(current_board_state)
         current_tetromino = next_tetromino
-        time.sleep(0.2)
+        time.sleep(0.001)
         
-        
-        
-        '''
-        time.sleep(0.1)
-        screenShot = ScreenReader(180, 600, 750, 800)
-        print("Screenshot taken!")
-        
-        current_board_state = screenShot.get_board_state(grid_size, cell_size, board_dimensions)
-        #for row in current_board_state:
-        #    print(''.join(["[]" if cell == 1 else " " for cell in row]))
-
-        border_length = len(current_board_state[0]) * 2  # Each cell becomes two characters wide
-        horizontal_border = '+' + '-' * border_length + '+'
-
-        print(horizontal_border)  # Print top border
-        for row in current_board_state:
-            row_str = '|' + ''.join(["[]" if cell == 1 else "  " for cell in row]) + '|'
-            print(row_str)  # Print each row with vertical borders
-        print(horizontal_border)  # Print bottom border
-        '''
-
 
