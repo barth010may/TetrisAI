@@ -22,44 +22,44 @@ class ScreenReader:
         img = np.array(screenshot)
         
         # Convert BGR to Grayscale
-        self.gray_img = cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY)
+        self.img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
         # Save grayscale image
-        cv2.imwrite('grayscale_screenshot.png', self.gray_img)
+        cv2.imwrite('grayscale_screenshot.png', self.img)
         print("Grayscale:", 'grayscale_screenshot.png')
 
         # Save the grayscale screenshot
         #screenshot.save('grayscale_screenshot.png')
     
-    def get_pixel(coords):
+    def get_pixel(self, coords):
     
         # Capture a specific region of the screen
         # The region is defined by (left, top, width, height)
         
-        region = (600, 180, 750, 800)  # Example values
-        screenshot = pyautogui.screenshot(region=region)
+        # dregion = (600, 180, 750, 800)  # Example values
+        #screenshot = pyautogui.screenshot(region=region)
 
         # Convert to NumPy array in BGR format
-        img = np.array(screenshot)
-        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        #img = np.array(screenshot)
+        #img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         
         # Convert BGR to Grayscale
         #gray_img = cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY)
-        cv2.imwrite('grayscale_screenshot.png', img)
-        print("Grayscale:", 'grayscale_screenshot.png')
+        #cv2.imwrite('grayscale_screenshot.png', img)
+        #print("Grayscale:", 'grayscale_screenshot.png')
         
-        pixel_value = img[coords[1], coords[0]]
+        pixel_value = self.img[coords[1], coords[0]]
         print(f"Pixel Value: {pixel_value}")
         return tuple(pixel_value)
 
     # Load an image in gray scale
     def grayScale_pixels(self, coords):
-        pixel_value = self.gray_img[coords[1], coords[0]]
-        return pixel_value
+        pixel_value = self.img[coords[1], coords[0]]
+        return tuple(pixel_value)
 
 
     def is_cell_filled(self, cell):
-        if self.grayScale_pixels(cell) != 0:
+        if self.grayScale_pixels(cell) != (0, 0, 0):
             return True
         else:
             return False

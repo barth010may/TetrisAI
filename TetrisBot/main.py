@@ -71,22 +71,29 @@ TETROMINO_NEXT = {
 if __name__ == '__main__':
 
     keyboard = KeyboardInput()
-    current_tetromino = TETROMINO_CURRENT[ScreenReader.get_pixel(current_shape_pixel)]
+    first_screenshot = ScreenReader(180, 600, 750, 800)
+    current_tetromino = TETROMINO_CURRENT[first_screenshot.get_pixel(current_shape_pixel)]
     next_tetromino = None
-    time.sleep(2)
-        
+    time.sleep(0.2)
+    flag = True
     # Get the current state of the board
     while True:
-        next_tetromino = TETROMINO_NEXT[ScreenReader.get_pixel(next_shape_pixel)]
-        current_board_state = ScreenReader(180, 600, 750, 800).get_board_state(grid_size, cell_size, board_dimensions)
+        # TODO: limit loop to one screenshot, as i think its slowing down the algorithm
+        screenShot = ScreenReader(180, 600, 750, 800)
+        next_tetromino = TETROMINO_NEXT[screenShot.get_pixel(next_shape_pixel)]
+        current_board_state = screenShot.get_board_state(grid_size, cell_size, board_dimensions)
         #ScreenReader.print_board(current_board_state)
         
         field = Field(current_board_state)
+        print(field)
         opt = Optimizer.get_optimal_drop(field, current_tetromino)
+        #flag = False
+        
         rotation = opt['tetromino_rotation']
         column = opt['tetromino_column']
-        #current_tetromino.rotate(rotation)
-        #field.drop(current_tetromino, column)
+        # TODO: Implement Held piece, to optimize algorithm. Just compare the drop of both pieces and determine which is better
+        # For the start of the round, just auto place the first piece into the held spot, since it doesn't make a big difference
+        
         keys = Optimizer.get_keystrokes(rotation, column, {
             'rotate_right': 'x',
             'rotate_left': 'z',
@@ -95,8 +102,7 @@ if __name__ == '__main__':
             'drop': ' '
         })
         pyautogui.typewrite(keys)
-        ScreenReader.print_board(current_board_state)
         current_tetromino = next_tetromino
-        time.sleep(0.001)
+        
         
 

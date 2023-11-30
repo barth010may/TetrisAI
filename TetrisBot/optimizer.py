@@ -4,14 +4,9 @@ from Shape import Tetromino
 
 from collections import defaultdict
 from functools import cmp_to_key
-
-board_top = 97 - 32 * 2
-board_left = 212
-BOARD_WIDTH = 508 - board_left
-BOARD_HEIGHT = 714 - board_top
+from field import Field
 
 class Optimizer():
-
     
     @staticmethod
     def get_optimal_drop(field, tetromino):
@@ -23,13 +18,9 @@ class Optimizer():
         ]
         drops = []
         for rotation, tetromino_ in enumerate(rotations):
-            for column in range(BOARD_WIDTH):
+            for column in range(Field.WIDTH):
                 try:
                     f = field.copy()
-                    # Current issue, is that i decided to drop the field class,
-                    # However, the optimizer needs a functioning field class,
-                    # so to fix, try to implement the field class from the original
-                    # alternatively, just implement the drop classes and the rest into board instance
                     row = f.drop(tetromino_, column)
                     drops.append({
                         'field': f,
@@ -41,9 +32,29 @@ class Optimizer():
                     })
                 except AssertionError:
                     continue
-
-        # First, we pick out all the drops that will produce the least
-        # amount of gaps.
+        
+        # TODO: Long boy, always places the tet one column to the right of the optimal drop, could be a index problem
+        # where the column count from 1 and the field counts from 0, seems to work when column tet is subtracted by 1, but it fucks up the rest of the field
+        
+        # Calculate the cost of every drop, and return the drop which cost is the lowest 
+        
+        for drop in drops:
+            #print(drop['field'])
+            #print(f'field height: {drop["field_height"]}')
+            #print(f'amount of gaps: {drop["field_gaps"]}')
+            #print(f'lowest row: {drop["tetromino_row"]}') 
+            drop['cost'] = drop['field_gaps'] + 2 * drop['field_height']
+            print(f'cost: {drop["cost"]}')
+        
+        # sort the drops based on the lowest cost first.
+        drops.sort(key=lambda drop: drop['cost'])
+        
+        print(drops[0]['field'])
+        print(f'lowest cost drop: {drops[0]["cost"]}')
+        
+        '''
+        #First, we pick out all the drops that will produce the least
+        #amount of gaps.
         lowest_gaps = min([drop['field_gaps'] for drop in drops])
         drops = list(filter(
             lambda drop: drop['field_gaps'] == lowest_gaps, drops))
@@ -51,11 +62,14 @@ class Optimizer():
         lowest_height = min([drop['field_height'] for drop in drops])
         drops = list(filter(
             lambda drop: drop['field_height'] == lowest_height, drops))
+        
         # Finally, we sort for the ones that drop the tetromino in the lowest
         # row. Since rows increase from top to bottom, we use max() instead.
         lowest_row = max([drop['tetromino_row'] for drop in drops])
         drops = list(filter(
             lambda drop: drop['tetromino_row'] == lowest_row, drops))
+        '''
+        
         assert len(drops) > 0
         return drops[0]
 
@@ -69,7 +83,9 @@ class Optimizer():
             keys.append(keymap['rotate_right'])
             keys.append(keymap['rotate_right'])
         elif rotation == 3:
-            keys.append(keymap['rotate_left'])
+            keys.append(keymap['rotate_right'])
+            keys.append(keymap['rotate_right'])
+            keys.append(keymap['rotate_right'])
         # Then we move it all the way to the the left that we are guaranteed
         # that it is at column 0. The main reason for doing this is that when
         # the tetromino is rotated, the bottom-leftmost piece in the tetromino
@@ -77,7 +93,7 @@ class Optimizer():
         # about a specific point. There are too many edge cases so instead of
         # implementing tetromino rotation on the board, it's easier to just
         # flush all the pieces to the left after orienting them.
-        for i in range(4):
+        for i in range(6):
             keys.append(keymap['move_left'])
         # Now we can move it back to the correct column. Since pyautogui's
         # typewrite is instantaneous, we don't have to worry about the delay
