@@ -25,25 +25,6 @@ grid_size = (10, 20)  # Example for a standard Tetris grid
 cell_size = (cell_width, cell_height)
 board_dimensions = (board_top, board_left)
 
-''' HOME PC gray values, apparently they are different from screen to scree :(
-def shape_gray_values(self):
-        self.next_square = 146
-        self.next_tower = 134
-        self.next_pyramid = 108
-        self.next_right_stair = 155
-        self.next_left_stair = 96
-        self.next_left_bed = 123
-        self.next_right_bed = 84
-
-        self.current_square = 182
-        self.current_tower = 163, 
-        self.current_pyramid = 117, 
-        self.current_right_stair = 184
-        self.current_left_stair = 99, 
-        self.current_left_bed = 137
-        self.current_right_bed = 81
-'''
-
 # True gray values for laptop screen
 TETROMINO_CURRENT = {
     (60, 205, 241): Tetromino.OTetromino(),
@@ -120,10 +101,7 @@ if __name__ == '__main__':
         opt_held = Optimizer.get_optimal_drop(field, held_tetromino)
         
         held_tet_better = opt_held['cost'] < opt_current['cost']
-        if (held_tet_better):
-            opt = opt_held
-        else:
-            opt = opt_current
+        opt = opt_held if held_tet_better else opt_current
         
         rotation = opt['tetromino_rotation']
         column = opt['tetromino_column']
@@ -139,7 +117,7 @@ if __name__ == '__main__':
             keys.insert(0, 'c')
         pyautogui.typewrite(keys)
         current_tetromino = next_tetromino
-        time.sleep(0.5)
+        time.sleep(0.33)
     
         
 
